@@ -1,5 +1,6 @@
 #pragma once
 #include "Entity.h"
+#include "Player.h"
 
 class Monster : public Entity
 {
@@ -11,5 +12,7 @@ protected:
 
 public:
 	Monster(int x, int y, const char* display, int attack, int maxHealth);
+	void TakeDamage(int damage);
+	void DealDamage(Player* player);
 };
 

@@ -132,6 +132,7 @@
     <ClCompile Include="Golem.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Monster.cpp" />
+    <ClCompile Include="Player.cpp" />
     <ClCompile Include="Reaper.cpp" />
     <ClCompile Include="Room.cpp" />
     <ClCompile Include="Specter.cpp" />
@@ -141,6 +142,7 @@
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Golem.h" />
     <ClInclude Include="Monster.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="Reaper.h" />
     <ClInclude Include="Room.h" />
     <ClInclude Include="Specter.h" />
