@@ -3,11 +3,13 @@
 #include "Player.h"
 #include "Golem.h"
 #include "Room.h"
+#include "GameManager.h"
 
 int main()
 {
     srand(time(NULL));
-    Room* room1 = new Room();
+    GameManager* gameManager = new GameManager();
+    gameManager->GameLoop();
     
     //Player* player = new Player(0, 0);
     //Golem* golem = new Golem(0, 0, 0, 0);

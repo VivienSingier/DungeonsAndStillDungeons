@@ -170,9 +170,21 @@ void Room::SwapEntities(Entity* pEntity1, Entity* pEntity2)
 	int x2 = pEntity2->mCoordX;
 	int y2 = pEntity2->mCoordY;
 
+	std::cout << pEntity1->mCoordX << "|" << pEntity1->mCoordY << std::endl;
+	std::cout << pEntity2->mCoordX << "|" << pEntity2->mCoordY << std::endl;
+
 	Entity* temp = mRoomArray[y1][x1];
+
 	mRoomArray[y1][x1] = mRoomArray[y2][x2];
+	pEntity1->mCoordX = pEntity2->mCoordX;
+	pEntity1->mCoordY = pEntity2->mCoordY;
+
 	mRoomArray[y2][x2] = temp;
+	pEntity2->mCoordX = pEntity1->mCoordX;
+	pEntity2->mCoordY = pEntity1->mCoordY;
+
+	std::cout << pEntity1->mCoordX << "|" << pEntity1->mCoordY << std::endl;
+	std::cout << pEntity2->mCoordX << "|" << pEntity2->mCoordY << std::endl;
 }
 
 void Room::RemoveEntity(Entity* pEntity)
@@ -181,6 +193,12 @@ void Room::RemoveEntity(Entity* pEntity)
 	int y = pEntity->mCoordY;
 	delete pEntity;
 	mRoomArray[y][x] = new Entity(x, y, "   ");
+}
+
+void Room::AddPlayer(Player* player, int x, int y)
+{
+	delete mRoomArray[y][x];
+	mRoomArray[y][x] = player;
 }
 
 void Room::AddIntoMonsterArray(Monster* pMonster)
@@ -202,6 +220,11 @@ void Room::RemoveMonster(Monster* pMonster)
 	mMonsterArray = (Monster**) realloc(mMonsterArray, sizeof(Monster*) * mMonsterCounter - 1);
 
 	mMonsterCounter--;
+}
+
+bool Room::CheckIsEmpty(int x, int y)
+{
+	return mRoomArray[y][x]->mDisplay == "   ";
 }
 
 void Room::PlaceDoors()
@@ -269,15 +292,26 @@ void Room::PlaceEnnemies()
 	}
 }
 
+void DisplayLine()
+{
+	for (int i = 0; i < 11; i++)
+	{
+		std::cout << "+---";
+	}
+	std::cout << "+" << std::endl;
+}
+
 void Room::Display()
 {
 	for (int i = 0; i < 11; i++)
 	{
+		DisplayLine();
 		for (int j = 0; j < 11; j++)
 		{
-			std::cout << mRoomArray[i][j]->mDisplay << " ";
+			std::cout << "|" << mRoomArray[i][j]->mDisplay;
 		}
-		std::cout << std::endl;
+		std::cout << "|" << std::endl;
 	}
+	DisplayLine();
 }
 
