@@ -1,12 +1,22 @@
 #include <iostream>
 #include <cstdlib>
+#include "Player.h"
+#include "Golem.h"
 #include "Room.h"
 
 int main()
 {
     srand(time(NULL));
     Room* room1 = new Room();
-    room1->Display();
-    //Entity* entity1 = new Entity();
-    //std::cout << entity1->mDisplay << std::endl;
+    
+    //Player* player = new Player(0, 0);
+    //Golem* golem = new Golem(0, 0, 0, 0);
+
+    //for (int i = 0; i < 10; i++)
+    //{
+    //    player->DealDamage(golem);
+    //    golem->DisplayStats();
+    //    golem->DealDamage(player);
+    //    player->DisplayStats();
+    //}
 }

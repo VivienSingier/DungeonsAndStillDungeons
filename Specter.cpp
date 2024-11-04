@@ -1,6 +1,6 @@
 #include "Specter.h"
 
-Specter::Specter(int x, int y, int difficulty) : Monster::Monster(x, y, " S ", 2, 15)
+Specter::Specter(int x, int y, int difficulty, int index) : Monster::Monster(x, y, " S ", 2, 15, index)
 {
 	mAttack += 1 * difficulty;
 	mMaxHealth += 5 * difficulty;

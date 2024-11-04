@@ -6,6 +6,7 @@ class Reaper : public Monster
 	int mHealValue;
 
 public:
-	Reaper(int x, int y, int difficulty);
+	Reaper(int x, int y, int difficulty, int index);
+	void TakeDamage(int damage) override;
 };
 

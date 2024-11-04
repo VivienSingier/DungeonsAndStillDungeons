@@ -7,6 +7,8 @@ class Golem : public Monster
 	bool mIsResisting;
 
 public:
-	Golem(int x, int y, int difficulty);
+	Golem(int x, int y, int difficulty, int index);
+	void TakeDamage(int damage) override;
+	void Reward(Player* player) override;
 };
 

@@ -1,18 +1,18 @@
 #pragma once
-#include "Entity.h"
-#include "Player.h"
+#include "Character.h"
 
-class Monster : public Entity
+class Player;
+
+class Monster : public Character
 {
-protected:
-	int mAttack;
-	int mMaxHealth;
-	int mHealth;
-	// Player player;
+	static int mCounter;
 
 public:
-	Monster(int x, int y, const char* display, int attack, int maxHealth);
-	void TakeDamage(int damage);
-	void DealDamage(Player* player);
+	int mRoomIndex;
+
+	Monster(int x, int y, const char* display, int attack, int maxHealth, int index);
+	virtual void Reward(Player* player) {}
+	virtual void SpecialAbility() {}
+	void DisplayStats() override;
 };
 

@@ -1,26 +1,26 @@
 #include "Player.h"
+#include "iostream"
 
-Player::Player(int x, int  y) : Entity::Entity(x, y, " @ ")
+Player::Player(int x, int  y) : Character(x, y, " @ ", 5, 30)
 {
-	mHealth = 30;
-	mMaxHealth = 30;
-	mAttack = 5;
 	mDefense = 0;
 }
 
 void Player::TakeDamage(int damage)
 {
-	if (mHealth > damage)
-	{
-		mHealth -= damage;
-	}
-	else
-	{
-		mHealth = 0;
-	}
+	damage -= mDefense;
+	Character::TakeDamage(damage);
 }
 
-void Player::DealDamage(Monster* monster)
+void Player::DisplayStats()
 {
-	monster->TakeDamage(mAttack);
+	Character::DisplayStats();
+	std::cout << "[DFS " << mDefense << "] " << std::endl;
+
+	std::cout << "+";
+	for (int i = 0; i < 43; i++)
+	{
+		std::cout << "-";
+	}
+	std::cout << "+" << std::endl;
 }
