@@ -2,7 +2,7 @@
 #include "Player.h"
 #include <cstdlib>
 
-Reaper::Reaper(int x, int  y, int difficulty, int index) : Monster::Monster(x, y, " R ", 5, 25, index)
+Reaper::Reaper(int x, int  y, int difficulty, int index) : Monster::Monster(x, y, " R ", 5, 25, index, 4, "REAPER")
 {
 	mAttack += 2 * difficulty;
 	mMaxHealth += 4 * difficulty;

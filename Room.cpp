@@ -5,6 +5,11 @@
 #include "Reaper.h"
 #include <iostream>
 #include <cstdlib>
+#include "utils.h"
+
+#include "Entity.h"
+#include "Monster.h"
+#include "Player.h"
 
 int Room::mCouter = 0;
 
@@ -82,8 +87,14 @@ Room::Room()
 	{
 		for (int j = 0; j < 11; j++)
 		{
-			mRoomArray[i][j] = new Entity(j, i, "   ");
+			mRoomArray[i][j] = new Entity(j, i, "   ", 15);
 		}
+	}
+
+	mDoorArray = new Door * [4];
+	for (int i = 0; i < 4; i++)
+	{
+		mDoorArray[i] = nullptr;
 	}
 
 	mMonsterCounter = 0;
@@ -125,8 +136,14 @@ Room::Room(Room* neighbour, int direction, int difficulty)
 	{
 		for (int j = 0; j < 11; j++)
 		{
-			mRoomArray[i][j] = new Entity(j, i, "   ");
+			mRoomArray[i][j] = new Entity(j, i, "   ", 15);
 		}
+	}
+
+	mDoorArray = new Door * [4];
+	for (int i = 0; i < 4; i++)
+	{
+		mDoorArray[i] = nullptr;
 	}
 
 	mMonsterCounter = 0;
@@ -163,29 +180,21 @@ Room::Room(Room* neighbour, int direction, int difficulty)
 	PlaceEnnemies();
 }
 
-void Room::SwapEntities(Entity* pEntity1, Entity* pEntity2)
+void Room::MoveEntity(Entity* pEntity , int x, int y)
 {
-
-
-	std::cout << pEntity1->mCoordX << "|" << pEntity1->mCoordY << std::endl;
-	std::cout << pEntity2->mCoordX << "|" << pEntity2->mCoordY << std::endl;
-
-	Entity* temp = pEntity1;
-
-	pEntity1 = pEntity2;
-
-	pEntity2 = temp;
-
-	std::cout << pEntity1->mCoordX << "|" << pEntity1->mCoordY << std::endl;
-	std::cout << pEntity2->mCoordX << "|" << pEntity2->mCoordY << std::endl;
+	delete mRoomArray[y][x];
+	mRoomArray[y][x] = pEntity;
+	
+	mRoomArray[pEntity->mCoordY][pEntity->mCoordX] = new Entity(pEntity->mCoordX, pEntity->mCoordY, "   ", 15);
+	pEntity->mCoordX = x;
+	pEntity->mCoordY = y;
 }
 
 void Room::RemoveEntity(Entity* pEntity)
 {
 	int x = pEntity->mCoordX;
 	int y = pEntity->mCoordY;
-	delete pEntity;
-	mRoomArray[y][x] = new Entity(x, y, "   ");
+	mRoomArray[y][x] = new Entity(x, y, "   ", 15);
 }
 
 void Room::AddPlayer(Player* player, int x, int y)
@@ -196,7 +205,7 @@ void Room::AddPlayer(Player* player, int x, int y)
 
 void Room::AddIntoMonsterArray(Monster* pMonster)
 {
-	mMonsterArray = (Monster**)realloc(mMonsterArray, sizeof(Monster*) * mMonsterCounter + 1);
+	mMonsterArray = (Monster**)realloc(mMonsterArray, sizeof(Monster*) * (mMonsterCounter + 1));
 
 	mMonsterArray[mMonsterCounter] = pMonster;
 	mMonsterCounter += 1;
@@ -210,7 +219,7 @@ void Room::RemoveMonster(Monster* pMonster)
 
 	RemoveEntity(pMonster);
 	
-	mMonsterArray = (Monster**) realloc(mMonsterArray, sizeof(Monster*) * mMonsterCounter - 1);
+	mMonsterArray = (Monster**) realloc(mMonsterArray, sizeof(Monster*) * (mMonsterCounter - 1));
 
 	mMonsterCounter--;
 }
@@ -224,19 +233,27 @@ void Room::PlaceDoors()
 {
 	if (mNeighbours[0] != nullptr)
 	{
-		mRoomArray[0][5] = new Door(0, 5, 0);
+		Door* newDoor = new Door(0, 5, 0, mNeighbours[0]);
+		mRoomArray[0][5] = newDoor;
+		mDoorArray[0] = newDoor;
 	}
 	if (mNeighbours[1] != nullptr)
 	{
-		mRoomArray[5][10] = new Door(5, 10, 1);
+		Door* newDoor = new Door(5, 10, 1, mNeighbours[1]);
+		mRoomArray[5][10] = newDoor;
+		mDoorArray[1] = newDoor;
 	}
 	if (mNeighbours[2] != nullptr)
-	{
-		mRoomArray[10][5] = new Door(10, 5, 2);
+	{	
+		Door* newDoor = new Door(10, 5, 2, mNeighbours[2]);
+		mRoomArray[10][5] = newDoor;
+		mDoorArray[2] = newDoor;
 	}
 	if (mNeighbours[3] != nullptr)
 	{
-		mRoomArray[5][0] = new Door(5, 0, 3);
+		Door* newDoor = new Door(5, 0, 3, mNeighbours[3]);
+		mRoomArray[5][0] = newDoor;
+		mDoorArray[3];
 	}
 }
 
@@ -301,7 +318,10 @@ void Room::Display()
 		DisplayLine();
 		for (int j = 0; j < 11; j++)
 		{
-			std::cout << "|" << mRoomArray[i][j]->mDisplay;
+			std::cout << "|";
+			Utils::SetColor(mRoomArray[i][j]->mColor, BLACK);
+			std::cout << mRoomArray[i][j]->mDisplay;
+			Utils::ResetColor();
 		}
 		std::cout << "|" << std::endl;
 	}

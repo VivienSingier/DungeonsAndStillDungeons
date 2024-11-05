@@ -1,31 +1,9 @@
 #include "Character.h"
 #include <iostream>
 #include <Windows.h>
+#include "utils.h"
 
-#define BLACK 0
-#define RED 4
-#define GREEN 2
-#define YELLOW 6
-#define BLUE 1
-#define MAGENTA 5
-#define CYAN 3
-#define WHITE 15
-#define LIGHTBLUE 9
-#define LIGHTGREEN 10
-
-void SetColor(int color, int bgColor)
-{
-	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-	SetConsoleTextAttribute(hConsole, (bgColor << 4) | color);
-}
-
-void ResetColor()
-{
-	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-	SetConsoleTextAttribute(hConsole, (0 << 4) | 7);
-}
-
-Character::Character(int x, int y, const char* display, int attack, int maxHealth) : Entity(x, y, display)
+Character::Character(int x, int y, const char* display, int attack, int maxHealth, int color) : Entity(x, y, display, color)
 {
 	mAttack = attack;
 	mMaxHealth = maxHealth;
@@ -35,7 +13,7 @@ Character::Character(int x, int y, const char* display, int attack, int maxHealt
 
 void Character::TakeDamage(int damage)
 {
-	if (damage > mHealth)
+	if (damage >= mHealth)
 	{
 		mHealth = 0;
 		mIsAlive = false;
@@ -53,27 +31,38 @@ void Character::DealDamage(Character* character)
 
 void Character::DisplayStats()
 {
-	std::cout << "+";
-	for (int i = 0; i < 43; i++)
-	{
-		std::cout << "-";
-	}
-	std::cout << "+" << std::endl;
-
 	int healthCubes = (int)(((float) mHealth / (float) mMaxHealth) * 10);
-	std::cout << "HP        ";
-	SetColor(BLACK, RED);
-	for (int i = 0; i < healthCubes; i++)
+	std::cout << "   HP   ";
+	Utils::SetColor(BLACK, RED);
+	if (mHealth == mMaxHealth)
 	{
-		std::cout << "[]";
+		for (int i = 0; i < healthCubes; i++)
+		{
+			std::cout << "[]";
+		}
 	}
-	ResetColor();
+	else
+	{
+		for (int i = 0; i < healthCubes - 1; i++)
+		{
+			std::cout << "[]";
+		}
+		if (mHealth > 0)
+		{
+			Utils::SetColor(BLACK, YELLOW);
+			std::cout << "[]";
+		}
+	}
+	Utils::ResetColor();
 	for (int i = 0; i < 10 - healthCubes; i++)
 	{
 		std::cout << "[]";
 	}
+	std::cout << " " << mHealth << "/" << mMaxHealth;
+
 	std::cout << std::endl;
 
-	std::cout << "[ATK " << mAttack << "] ";
+	std::cout << "   [ATK " << mAttack << "] ";
 
 }
+						

@@ -1,17 +1,15 @@
 #pragma once
-#include "Entity.h"
-#include "Monster.h"
-#include "Player.h"
+
+class Entity;
+class Player;
+class Monster;
+class Door;
 
 class Room
 {
-
 	static int mCouter;
 
 	Room* mNeighbours[4];
-
-	int mMonsterCounter;
-	Monster** mMonsterArray;
 
 	bool mIsClear;
 	int mDifficulty;
@@ -22,10 +20,13 @@ class Room
 
 public:
 	Entity*** mRoomArray;
+	int mMonsterCounter;
+	Monster** mMonsterArray;
+	Door** mDoorArray;
 
 	Room();
 	Room(Room* neighbour, int direction, int difficulty);
-	void SwapEntities(Entity* pEntity1, Entity* pEntity2);
+	void MoveEntity(Entity* pEntity, int x, int y);
 	void RemoveEntity(Entity* pEntity);
 	void AddPlayer(Player* player, int x, int y);
 	void AddIntoMonsterArray(Monster* pMonster);

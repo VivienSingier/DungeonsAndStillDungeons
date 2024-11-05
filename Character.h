@@ -9,7 +9,7 @@ public:
 	int mAttack;
 	bool mIsAlive;
 
-	Character(int x, int y, const char* display, int maxHealth, int attack);
+	Character(int x, int y, const char* display, int maxHealth, int attack, int color);
 	virtual void TakeDamage(int damage);
 	void DealDamage(Character* character);
 	virtual void DisplayStats();

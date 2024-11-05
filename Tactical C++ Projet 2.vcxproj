@@ -138,6 +138,7 @@
     <ClCompile Include="Reaper.cpp" />
     <ClCompile Include="Room.cpp" />
     <ClCompile Include="Specter.cpp" />
+    <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Character.h" />
@@ -150,6 +151,7 @@
     <ClInclude Include="Reaper.h" />
     <ClInclude Include="Room.h" />
     <ClInclude Include="Specter.h" />
+    <ClInclude Include="Utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

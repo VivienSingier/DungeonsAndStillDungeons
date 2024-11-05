@@ -2,7 +2,7 @@
 #include "Player.h"
 #include <cstdlib>
 
-Golem::Golem(int x, int y, int difficulty, int index) : Monster(x, y, " G ", 3, 35, index)
+Golem::Golem(int x, int y, int difficulty, int index) : Monster(x, y, " G ", 3, 35, index, 6, "GOLEM")
 {
 	mAttack += 1 * difficulty;
 	mMaxHealth += 7 * difficulty;
