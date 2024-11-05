@@ -93,7 +93,6 @@ void GameManager::Update()
 void GameManager::Display()
 {
 	mCurrentRoom->Display();
-	std::cout << mPlayer->mCoordX << "|" << mPlayer->mCoordY << std::endl;
 }
 
 void GameManager::GameLoop()

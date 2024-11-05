@@ -165,23 +165,16 @@ Room::Room(Room* neighbour, int direction, int difficulty)
 
 void Room::SwapEntities(Entity* pEntity1, Entity* pEntity2)
 {
-	int x1 = pEntity1->mCoordX;
-	int y1 = pEntity1->mCoordY;
-	int x2 = pEntity2->mCoordX;
-	int y2 = pEntity2->mCoordY;
+
 
 	std::cout << pEntity1->mCoordX << "|" << pEntity1->mCoordY << std::endl;
 	std::cout << pEntity2->mCoordX << "|" << pEntity2->mCoordY << std::endl;
 
-	Entity* temp = mRoomArray[y1][x1];
+	Entity* temp = pEntity1;
 
-	mRoomArray[y1][x1] = mRoomArray[y2][x2];
-	pEntity1->mCoordX = pEntity2->mCoordX;
-	pEntity1->mCoordY = pEntity2->mCoordY;
+	pEntity1 = pEntity2;
 
-	mRoomArray[y2][x2] = temp;
-	pEntity2->mCoordX = pEntity1->mCoordX;
-	pEntity2->mCoordY = pEntity1->mCoordY;
+	pEntity2 = temp;
 
 	std::cout << pEntity1->mCoordX << "|" << pEntity1->mCoordY << std::endl;
 	std::cout << pEntity2->mCoordX << "|" << pEntity2->mCoordY << std::endl;
