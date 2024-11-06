@@ -8,13 +8,30 @@
 #include "Player.h"
 #include "Monster.h"
 #include "Door.h"
+#include "AsciiArt.h"
+
+GameManager* GameManager::mInstance = nullptr;
+
+GameManager* GameManager::GetInstance()
+{
+	if (mInstance == nullptr)
+	{
+		mInstance = new GameManager();
+	}
+	return mInstance;
+}
 
 GameManager::GameManager()
 {
 	mCurrentRoom = new Room();
 	mPlayer = new Player(5, 5);
 	mClosestEnnemie = GetClosestEnnemie();
+	mAttackedMonster = nullptr;
+	mActionMessage = GetClosestEnnemie()->mActionMessage;
 	mIsPlaying = true;
+	mHasWon = false;
+	mHasAttacked = false;
+	mCanAttack = false;
 
 	mCurrentRoom->AddPlayer(mPlayer, 5, 5);
 }
@@ -29,6 +46,25 @@ bool GameManager::IsValidCoordinates(int x, int y)
 		}
 	}
 	return false;
+}
+
+bool GameManager::IsGameWon(Room* pCurrentRoom)
+{
+	if (!pCurrentRoom->CheckIsRoomEmpty())
+	{
+		return false;
+	}
+	for (int i = 0; i < 4; i++)
+	{
+		if (pCurrentRoom->mNeighbours[i] != nullptr)
+		{
+			if (!IsGameWon(pCurrentRoom->mNeighbours[i]))
+			{
+				return false;
+			}
+		}
+	}
+	return true;
 }
 
 int GameManager::GetInput()
@@ -108,11 +144,13 @@ Monster* GameManager::GetClosestEnnemie()
 void GameManager::GoThroughDoor(Door* door)
 {
 	int  CoordArray[4][2] = {
-		{10, 5}, {5, 0}, {0, 5}, {5, 10}
+		{5, 9}, {1, 5}, {5, 1}, {9, 5}
 	};
 
 	mCurrentRoom->RemoveEntity(mPlayer);
 	mCurrentRoom = door->mRoom;
+	mPlayer->mCoordX = CoordArray[door->mDirection][0];
+	mPlayer->mCoordY = CoordArray[door->mDirection][1];
 	mCurrentRoom->AddPlayer(mPlayer, CoordArray[door->mDirection][0], CoordArray[door->mDirection][1]);
 }
 
@@ -120,7 +158,12 @@ void GameManager::MoveX(int direction)
 {
 	if (IsValidCoordinates(mPlayer->mCoordX + direction, mPlayer->mCoordY))
 	{
-		if (mCurrentRoom->CheckIsEmpty(mPlayer->mCoordX + direction, mPlayer->mCoordY))
+		if (mCurrentRoom->CheckIsDoor(mPlayer->mCoordX + direction, mPlayer->mCoordY))
+		{
+			Door* door = (Door*)mCurrentRoom->mRoomArray[mPlayer->mCoordY][mPlayer->mCoordX + direction];
+			GoThroughDoor(door);
+		}
+		else if (mCurrentRoom->CheckIsEmpty(mPlayer->mCoordX + direction, mPlayer->mCoordY))
 		{
 			mCurrentRoom->MoveEntity(mPlayer, mPlayer->mCoordX + direction, mPlayer->mCoordY);
 		}
@@ -131,7 +174,12 @@ void GameManager::MoveY(int direction)
 {
 	if (IsValidCoordinates(mPlayer->mCoordX, mPlayer->mCoordY + direction))
 	{
-		if (mCurrentRoom->CheckIsEmpty(mPlayer->mCoordX, mPlayer->mCoordY + direction))
+		if (mCurrentRoom->CheckIsDoor(mPlayer->mCoordX, mPlayer->mCoordY + direction))
+		{
+			Door* door = (Door*)mCurrentRoom->mRoomArray[mPlayer->mCoordY + direction][mPlayer->mCoordX];
+			GoThroughDoor(door);
+		}
+		else if (mCurrentRoom->CheckIsEmpty(mPlayer->mCoordX, mPlayer->mCoordY + direction))
 		{
 			mCurrentRoom->MoveEntity(mPlayer, mPlayer->mCoordX, mPlayer->mCoordY + direction);
 		}
@@ -140,6 +188,7 @@ void GameManager::MoveY(int direction)
 
 void GameManager::HandleInput() 
 {
+	mHasAttacked = false;
 	int input = GetInput();
 
 	switch (input)
@@ -164,25 +213,30 @@ void GameManager::HandleInput()
 			mPlayer->DealDamage(mClosestEnnemie);
 			mClosestEnnemie->DealDamage(mPlayer);
 			mClosestEnnemie->SpecialAbility();
-		}
-		if (!mClosestEnnemie->mIsAlive)
-		{
-			mClosestEnnemie->Reward(mPlayer);
-			mCurrentRoom->RemoveMonster(mClosestEnnemie);
+			mActionMessage = mClosestEnnemie->mActionMessage;
+			mAttackedMonster = mClosestEnnemie;
+			mHasAttacked = true;
+			if (!mClosestEnnemie->mIsAlive)
+			{
+				mClosestEnnemie->Reward(mPlayer);
+				mCurrentRoom->RemoveMonster(mClosestEnnemie);
+				mActionMessage = mClosestEnnemie->mDeathMessage;
+			}
 		}
 	}
 }
 
 void GameManager::Update()
 {
+	mCurrentRoom->CheckIsRoomEmpty();
 	mCanAttack = false;
 	if (mCurrentRoom->mMonsterCounter > 0)
 	{
 		mClosestEnnemie = GetClosestEnnemie();
-	}
-	if (mPlayer->GetDistance(mClosestEnnemie) == 1)
-	{
-		mCanAttack = true;
+		if (mPlayer->GetDistance(mClosestEnnemie) == 1)
+		{
+			mCanAttack = true;
+		}
 	}
 	if (!mPlayer->mIsAlive)
 	{
@@ -190,12 +244,36 @@ void GameManager::Update()
 	}
 }
 
-void GameManager::DisplayActions()
+void GameManager::DisplayInput()
 {
 	std::cout << "   [ZQSD] MOVE";
 	if (mCanAttack)
 	{
 		std::cout << "   [A] ATTACK";
+	}
+	std::cout << std::endl;
+	std::cout << "+";
+	for (int i = 0; i < 43; i++)
+	{
+		std::cout << "-";
+	}
+	std::cout << "+" << std::endl;
+}
+
+void GameManager::DisplayLastActions()
+{
+	if (mHasAttacked && mCurrentRoom->mMonsterCounter > 0)
+	{
+		std::cout << "   You attacked the " << mAttackedMonster->mName << " for " << mPlayer->mAttack << " damage";
+	}
+	std::cout << std::endl;
+	if (mHasAttacked && mCurrentRoom->mMonsterCounter > 0)
+	{
+		std::cout << "   " << mActionMessage; 
+		if (mClosestEnnemie->mIsAlive)
+		{
+			std::cout << " for " << mClosestEnnemie->mAttack << " damage";
+		}
 	}
 	std::cout << std::endl;
 	std::cout << "+";
@@ -212,13 +290,17 @@ void GameManager::Display()
 	mClosestEnnemie->DisplayStats();
 	mCurrentRoom->Display();
 	mPlayer->DisplayStats();
-	DisplayActions();
-	std::cout << "Player :" << mPlayer->mCoordX << "|" << mPlayer->mCoordY << std::endl;
-	std::cout << "Closest Ennemie :" << mClosestEnnemie->mCoordX << "|" << mClosestEnnemie->mCoordY << "|" << mPlayer->GetDistance(mClosestEnnemie) << std::endl;
+	DisplayLastActions();
+	DisplayInput();
+	std::cout << IsGameWon(mCurrentRoom);
 } 
 
 void GameManager::GameLoop()
 {
+	DisplayAsciiArt(title, 115, 32);
+	std::cout << std::endl << "               " << "Enter a key to START";
+	_getch();
+
 	Display();
 	while (mIsPlaying)
 	{
@@ -226,5 +308,8 @@ void GameManager::GameLoop()
 		HandleInput();
 		Update();
 	}
+
+	system("cls");
+	DisplayAsciiArt(gameOverTxt, 73, 8);
 }
 

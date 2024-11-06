@@ -8,6 +8,8 @@ Monster::Monster(int x, int y, const char* display, int attack, int maxHealth, i
 	Monster::mCounter++;
 	mRoomIndex = index;
 	mName = name;
+	mActionMessage = "NULL";
+	mDeathMessage = "NULL";
 }
 
 void Monster::DisplayStats()

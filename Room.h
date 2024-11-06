@@ -9,9 +9,6 @@ class Room
 {
 	static int mCouter;
 
-	Room* mNeighbours[4];
-
-	bool mIsClear;
 	int mDifficulty;
 
 	int mNumReaper;
@@ -20,9 +17,11 @@ class Room
 
 public:
 	Entity*** mRoomArray;
+	Room* mNeighbours[4];
 	int mMonsterCounter;
 	Monster** mMonsterArray;
 	Door** mDoorArray;
+
 
 	Room();
 	Room(Room* neighbour, int direction, int difficulty);
@@ -32,6 +31,8 @@ public:
 	void AddIntoMonsterArray(Monster* pMonster);
 	void RemoveMonster(Monster* pMonster);
 	bool CheckIsEmpty(int x, int y);
+	bool CheckIsDoor(int x, int y);
+	bool CheckIsRoomEmpty();
 	void PlaceDoors();
 	void PlaceEnnemies();
 	void Display();

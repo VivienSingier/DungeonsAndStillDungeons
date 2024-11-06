@@ -100,7 +100,6 @@ Room::Room()
 	mMonsterCounter = 0;
 	mMonsterArray = new Monster * [0];
 
-	mIsClear = false;
 	mDifficulty = 0;
 
 	mNumGolem = rand() % 3 + 1;
@@ -149,7 +148,6 @@ Room::Room(Room* neighbour, int direction, int difficulty)
 	mMonsterCounter = 0;
 	mMonsterArray = new Monster * [0];
 
-	mIsClear = false;
 	mDifficulty = difficulty;
 
 	mNumGolem = rand() % 3 + 1;
@@ -229,6 +227,20 @@ bool Room::CheckIsEmpty(int x, int y)
 	return mRoomArray[y][x]->mDisplay == "   ";
 }
 
+bool Room::CheckIsDoor(int x, int y)
+{
+	return mRoomArray[y][x]->mDisplay == " D ";
+}
+
+bool Room::CheckIsRoomEmpty()
+{
+	if (mMonsterCounter == 0)
+	{
+		return true;
+	}
+	return false;
+}
+
 void Room::PlaceDoors()
 {
 	if (mNeighbours[0] != nullptr)
@@ -253,7 +265,7 @@ void Room::PlaceDoors()
 	{
 		Door* newDoor = new Door(5, 0, 3, mNeighbours[3]);
 		mRoomArray[5][0] = newDoor;
-		mDoorArray[3];
+		mDoorArray[3] = newDoor;
 	}
 }
 

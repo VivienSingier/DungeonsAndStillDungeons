@@ -8,6 +8,8 @@ class Monster : public Character
 	static int mCounter;
 
 public:
+	const char* mActionMessage;
+	const char* mDeathMessage;
 	const char* mName;
 	int mRoomIndex;
 
