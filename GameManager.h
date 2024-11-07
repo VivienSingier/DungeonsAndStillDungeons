@@ -9,8 +9,6 @@ class GameManager
 {
 	static GameManager* mInstance;
 
-	Room* mCurrentRoom;
-	Player* mPlayer;
 	Monster* mClosestEnnemie;
 	Monster* mAttackedMonster;
 	const char* mActionMessage;
@@ -20,13 +18,17 @@ class GameManager
 	bool mHasAttacked;
 
 public:
+	int mTotalMonsterCount;
+	Room* mCurrentRoom;
+	Player* mPlayer;
+
 	static GameManager* GetInstance();
 
 	GameManager();
+	void Init();
 
 	int GetInput();
 	bool IsValidCoordinates(int x, int y);
-	bool IsGameWon(Room* pCurrentRoom);
 	Monster* GetClosestEnnemie();
 	void GoThroughDoor(Door* door);
 	void MoveX(int direction);

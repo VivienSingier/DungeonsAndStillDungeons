@@ -6,12 +6,14 @@
 #include <iostream>
 #include <cstdlib>
 #include "utils.h"
+#include "RoomGen.h"
 
+#include "GameManager.h"
 #include "Entity.h"
 #include "Monster.h"
 #include "Player.h"
 
-int Room::mCouter = 0;
+int Room::mCounter = 0;
 
 int** CreateAvailableCoordArray()
 {
@@ -76,7 +78,7 @@ void RemoveFromArray(int*** pArray, int index, int* size)
 
 Room::Room()
 {
-	Room::mCouter++;
+	Room::mCounter++;
 
 	mRoomArray = new Entity**[11];
 	for (int i = 0; i < 11; i++)
@@ -87,7 +89,7 @@ Room::Room()
 	{
 		for (int j = 0; j < 11; j++)
 		{
-			mRoomArray[i][j] = new Entity(j, i, "   ", 15);
+			mRoomArray[i][j] = nullptr;
 		}
 	}
 
@@ -124,7 +126,7 @@ Room::Room()
 
 Room::Room(Room* neighbour, int direction, int difficulty)
 {
-	Room::mCouter++;
+	Room::mCounter++;
 
 	mRoomArray = new Entity ** [11];
 	for (int i = 0; i < 11; i++)
@@ -135,7 +137,7 @@ Room::Room(Room* neighbour, int direction, int difficulty)
 	{
 		for (int j = 0; j < 11; j++)
 		{
-			mRoomArray[i][j] = new Entity(j, i, "   ", 15);
+			mRoomArray[i][j] = nullptr;
 		}
 	}
 
@@ -164,7 +166,7 @@ Room::Room(Room* neighbour, int direction, int difficulty)
 		int isRoom = rand() % 4;
 		if (!isRoom && i != direction)
 		{
-			if (Room::mCouter < 11)
+			if (Room::mCounter < 11)
 			{
 				mNeighbours[i] = new Room(this, i, mDifficulty + 1);
 			}
@@ -180,24 +182,29 @@ Room::Room(Room* neighbour, int direction, int difficulty)
 
 void Room::MoveEntity(Entity* pEntity , int x, int y)
 {
-	delete mRoomArray[y][x];
-	mRoomArray[y][x] = pEntity;
-	
-	mRoomArray[pEntity->mCoordY][pEntity->mCoordX] = new Entity(pEntity->mCoordX, pEntity->mCoordY, "   ", 15);
-	pEntity->mCoordX = x;
-	pEntity->mCoordY = y;
+	if (x != pEntity->mCoordX || y != pEntity->mCoordY)
+	{
+		mRoomArray[y][x] = pEntity;
+
+		mRoomArray[pEntity->mCoordY][pEntity->mCoordX] = nullptr;
+		pEntity->mCoordX = x;
+		pEntity->mCoordY = y;
+	}
 }
 
 void Room::RemoveEntity(Entity* pEntity)
 {
 	int x = pEntity->mCoordX;
 	int y = pEntity->mCoordY;
-	mRoomArray[y][x] = new Entity(x, y, "   ", 15);
+	mRoomArray[y][x] = nullptr;
 }
 
 void Room::AddPlayer(Player* player, int x, int y)
 {
-	delete mRoomArray[y][x];
+	if (mRoomArray[y][x] != nullptr)
+	{
+		RemoveEntity(mRoomArray[y][x]);
+	}
 	mRoomArray[y][x] = player;
 }
 
@@ -207,6 +214,7 @@ void Room::AddIntoMonsterArray(Monster* pMonster)
 
 	mMonsterArray[mMonsterCounter] = pMonster;
 	mMonsterCounter += 1;
+
 }
 
 void Room::RemoveMonster(Monster* pMonster)
@@ -220,15 +228,20 @@ void Room::RemoveMonster(Monster* pMonster)
 	mMonsterArray = (Monster**) realloc(mMonsterArray, sizeof(Monster*) * (mMonsterCounter - 1));
 
 	mMonsterCounter--;
+	GameManager::GetInstance()->mTotalMonsterCount--;
 }
 
 bool Room::CheckIsEmpty(int x, int y)
 {
-	return mRoomArray[y][x]->mDisplay == "   ";
+	return mRoomArray[y][x] == nullptr;
 }
 
 bool Room::CheckIsDoor(int x, int y)
 {
+	if (mRoomArray[y][x] == nullptr)
+	{
+		return false;
+	}
 	return mRoomArray[y][x]->mDisplay == " D ";
 }
 
@@ -271,47 +284,94 @@ void Room::PlaceDoors()
 
 void Room::PlaceEnnemies()
 {
-	int availableCoordCount = 11 * 11 - 5;
-	int** availableCoordArray = CreateAvailableCoordArray();
+	//int availableCoordCount = 11 * 11 - 5;
+	//int** availableCoordArray = CreateAvailableCoordArray();
 
-	for (int k = 0; k < mNumGolem; k++)
+	//for (int k = 0; k < mNumGolem; k++)
+	//{
+	//	int index = rand() % availableCoordCount;
+	//	int i = availableCoordArray[index][0];
+	//	int j = availableCoordArray[index][1];
+	//	RemoveFromArray(&availableCoordArray, index, &availableCoordCount);
+
+	//	Monster* newMonster = new Golem(j, i, mDifficulty, mMonsterCounter);
+	//	mRoomArray[i][j] = newMonster;
+	//	AddIntoMonsterArray(newMonster);
+	//	GameManager::GetInstance()->mTotalMonsterCount++;
+	//}
+
+	//for (int k = 0; k < mNumSpecter; k++)
+	//{
+	//	int index = rand() % availableCoordCount;
+	//	int i = availableCoordArray[index][0];
+	//	int j = availableCoordArray[index][1];
+	//	RemoveFromArray(&availableCoordArray, index, &availableCoordCount);
+
+	//	Monster* newMonster = new Specter(j, i, mDifficulty, mMonsterCounter);
+	//	mRoomArray[i][j] = newMonster;
+	//	AddIntoMonsterArray(newMonster);
+	//	GameManager::GetInstance()->mTotalMonsterCount++;
+	//}
+
+	//for (int k = 0; k < mNumReaper; k++)
+	//{
+	//	int index = rand() % availableCoordCount;
+	//	int i = availableCoordArray[index][0];
+	//	int j = availableCoordArray[index][1];
+	//	RemoveFromArray(&availableCoordArray, index, &availableCoordCount);
+
+	//	Monster* newMonster = new Reaper(j, i, mDifficulty, mMonsterCounter);
+	//	mRoomArray[i][j] = newMonster;
+	//	AddIntoMonsterArray(newMonster);
+	//	GameManager::GetInstance()->mTotalMonsterCount++;
+	//}
+	int layout;
+	int numMonster;
+
+	switch (mDifficulty)
 	{
-		int index = rand() % availableCoordCount;
-		int i = availableCoordArray[index][0];
-		int j = availableCoordArray[index][1];
-		RemoveFromArray(&availableCoordArray, index, &availableCoordCount);
-
-		delete mRoomArray[i][j];
-		Monster* newMonster = new Golem(j, i, mDifficulty, mMonsterCounter);
-		mRoomArray[i][j] = newMonster;
-		AddIntoMonsterArray(newMonster);
+	default:
+		layout = Room8Spots;
+		break;
+	case 0:
+	case 1:
+	case 2:
+		layout = Room4Spots;
+		break;
+	case 3:
+	case 4:
+	case 5:
+		layout = Room6Spots;
+		break;
+	case 6:
+	case 7:
+		layout = Room7Spots;
+		break;
 	}
 
-	for (int k = 0; k < mNumSpecter; k++)
+	if (layout == 0)
 	{
-		int index = rand() % availableCoordCount;
-		int i = availableCoordArray[index][0];
-		int j = availableCoordArray[index][1];
-		RemoveFromArray(&availableCoordArray, index, &availableCoordCount);
-
-		delete mRoomArray[i][j];
-		Monster* newMonster = new Specter(j, i, mDifficulty, mMonsterCounter);
-		mRoomArray[i][j] = newMonster;
-		AddIntoMonsterArray(newMonster);
+		numMonster = rand() % 4 + 1;
+	}
+	else if (layout > 0 && layout < 2)
+	{
+		numMonster = rand() % 6 + 2;
+	}
+	else
+	{
+		numMonster = rand() % 8 + 3;
 	}
 
-	for (int k = 0; k < mNumReaper; k++)
+	if (numMonster > layout + 4)
 	{
-		int index = rand() % availableCoordCount;
-		int i = availableCoordArray[index][0];
-		int j = availableCoordArray[index][1];
-		RemoveFromArray(&availableCoordArray, index, &availableCoordCount);
-
-		delete mRoomArray[i][j];
-		Monster* newMonster = new Reaper(j, i, mDifficulty, mMonsterCounter);
-		mRoomArray[i][j] = newMonster;
-		AddIntoMonsterArray(newMonster);
+		numMonster = layout + 4;
 	}
+
+	for (int i = 0; i < 3 + layout; i++)
+	{
+		
+	}
+
 }
 
 void DisplayLine()
@@ -331,9 +391,16 @@ void Room::Display()
 		for (int j = 0; j < 11; j++)
 		{
 			std::cout << "|";
-			Utils::SetColor(mRoomArray[i][j]->mColor, BLACK);
-			std::cout << mRoomArray[i][j]->mDisplay;
-			Utils::ResetColor();
+			if (mRoomArray[i][j] != nullptr)
+			{
+				Utils::SetColor(mRoomArray[i][j]->mColor, BLACK);
+				std::cout << mRoomArray[i][j]->mDisplay;
+				Utils::ResetColor();
+			}
+			else
+			{
+				std::cout << "   ";
+			}
 		}
 		std::cout << "|" << std::endl;
 	}

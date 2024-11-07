@@ -7,8 +7,6 @@ class Door;
 
 class Room
 {
-	static int mCouter;
-
 	int mDifficulty;
 
 	int mNumReaper;
@@ -16,6 +14,8 @@ class Room
 	int mNumSpecter;
 
 public:
+	static int mCounter;
+
 	Entity*** mRoomArray;
 	Room* mNeighbours[4];
 	int mMonsterCounter;

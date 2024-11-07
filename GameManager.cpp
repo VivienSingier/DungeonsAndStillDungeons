@@ -10,6 +10,14 @@
 #include "Door.h"
 #include "AsciiArt.h"
 
+enum RoomType 
+{
+	Room1,
+	Room2,
+
+	Count
+};
+
 GameManager* GameManager::mInstance = nullptr;
 
 GameManager* GameManager::GetInstance()
@@ -22,6 +30,15 @@ GameManager* GameManager::GetInstance()
 }
 
 GameManager::GameManager()
+{
+	mTotalMonsterCount = 0;
+	mIsPlaying = true;
+	mHasWon = false;
+	mHasAttacked = false;
+	mCanAttack = false;
+}
+
+void GameManager::Init()
 {
 	mCurrentRoom = new Room();
 	mPlayer = new Player(5, 5);
@@ -46,25 +63,6 @@ bool GameManager::IsValidCoordinates(int x, int y)
 		}
 	}
 	return false;
-}
-
-bool GameManager::IsGameWon(Room* pCurrentRoom)
-{
-	if (!pCurrentRoom->CheckIsRoomEmpty())
-	{
-		return false;
-	}
-	for (int i = 0; i < 4; i++)
-	{
-		if (pCurrentRoom->mNeighbours[i] != nullptr)
-		{
-			if (!IsGameWon(pCurrentRoom->mNeighbours[i]))
-			{
-				return false;
-			}
-		}
-	}
-	return true;
 }
 
 int GameManager::GetInput()
@@ -222,6 +220,13 @@ void GameManager::HandleInput()
 				mCurrentRoom->RemoveMonster(mClosestEnnemie);
 				mActionMessage = mClosestEnnemie->mDeathMessage;
 			}
+			if (!mCurrentRoom->CheckIsRoomEmpty())
+			{
+				for (int i = 0; i < mCurrentRoom->mMonsterCounter; i++)
+				{
+					mCurrentRoom->mMonsterArray[i]->Move();
+				}
+			}
 		}
 	}
 }
@@ -230,6 +235,11 @@ void GameManager::Update()
 {
 	mCurrentRoom->CheckIsRoomEmpty();
 	mCanAttack = false;
+	if (mTotalMonsterCount == 0)
+	{
+		mIsPlaying = false;
+		mHasWon = true;
+	}
 	if (mCurrentRoom->mMonsterCounter > 0)
 	{
 		mClosestEnnemie = GetClosestEnnemie();
@@ -292,11 +302,13 @@ void GameManager::Display()
 	mPlayer->DisplayStats();
 	DisplayLastActions();
 	DisplayInput();
-	std::cout << IsGameWon(mCurrentRoom);
+	std::cout << mTotalMonsterCount << "|" << mHasWon << "|" << Room::mCounter;
 } 
 
 void GameManager::GameLoop()
 {
+	Init();
+
 	DisplayAsciiArt(title, 115, 32);
 	std::cout << std::endl << "               " << "Enter a key to START";
 	_getch();
@@ -310,6 +322,20 @@ void GameManager::GameLoop()
 	}
 
 	system("cls");
-	DisplayAsciiArt(gameOverTxt, 73, 8);
+	if (!mHasWon)
+	{
+		DisplayAsciiArt(gameOverTxt, 73, 8);
+		mTotalMonsterCount = 0;
+		std::cout << std::endl << "                   " << "Enter a key to play again";
+		_getch();
+		GameLoop();
+	}
+	if (mHasWon)
+	{
+		DisplayAsciiArt(youWonTxt, 57, 8);
+		std::cout << std::endl << "                   " << "Enter a key to play again";
+		_getch();
+		GameLoop();
+	}
 }
 

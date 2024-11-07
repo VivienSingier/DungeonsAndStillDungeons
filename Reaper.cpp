@@ -1,5 +1,7 @@
 #include "Reaper.h"
 #include "Player.h"
+#include "GameManager.h"
+#include "Room.h"
 #include <cstdlib>
 
 Reaper::Reaper(int x, int  y, int difficulty, int index) : Monster::Monster(x, y, " R ", 5, 25, index, 4, "REAPER")
@@ -30,4 +32,61 @@ void Reaper::TakeDamage(int damage)
 			mHealth = mMaxHealth;
 		}
 	}
+}
+
+void Reaper::Reward(Player* player)
+{
+	player->mMaxHealth += 5;
+}
+
+void Reaper::Move()
+{
+	GameManager* gameManager = GameManager::GetInstance();
+	int newX = mCoordX;
+	int newY = mCoordY;
+	int playerX = gameManager->mPlayer->mCoordX;
+	int playerY = gameManager->mPlayer->mCoordY;
+
+	if (playerX > newX)
+	{
+		if (newX < 10)
+		{
+			if (gameManager->mCurrentRoom->CheckIsEmpty(newX + 1, newY))
+			{
+				newX++;
+			}
+		}
+	}
+	if (playerX < newX)
+	{
+		if (newX > 0)
+		{
+			if (gameManager->mCurrentRoom->CheckIsEmpty(newX - 1, newY))
+			{
+				newX--;
+			}
+		}
+	}
+	if (playerY > newY)
+	{
+		if (newY < 10)
+		{
+			if (gameManager->mCurrentRoom->CheckIsEmpty(newX, newY + 1))
+			{
+				newY++;
+			}
+		}
+	}
+	if (playerY < newY)
+	{
+		if (newY > 0)
+		{
+			if (gameManager->mCurrentRoom->CheckIsEmpty(newX, newY - 1))
+			{
+				newY--;
+			}
+		}
+	}
+
+	gameManager->mCurrentRoom->MoveEntity(this, newX, newY);
 }
