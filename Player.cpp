@@ -1,7 +1,7 @@
 #include "Player.h"
 #include "iostream"
 
-Player::Player(int x, int  y) : Character(x, y, " @ ", 100, 30000, 1)
+Player::Player(int x, int  y) : Character(x, y, " @ ", 5, 30, 1)
 {
 	mDefense = 0;
 }

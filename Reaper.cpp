@@ -4,14 +4,14 @@
 #include "Room.h"
 #include <cstdlib>
 
-Reaper::Reaper(int x, int  y, int difficulty, int index) : Monster::Monster(x, y, " R ", 5, 25, index, 4, "REAPER")
+Reaper::Reaper(int x, int  y, int difficulty, int index) : Monster::Monster(x, y, " R ", 5, 20, index, 4, "REAPER")
 {
-	mAttack += 2 * difficulty;
-	mMaxHealth += 4 * difficulty;
-	mHealth += 4 * difficulty;
+	mAttack += 1 * difficulty;
+	mMaxHealth += 3 * difficulty;
+	mHealth += 3 * difficulty;
 	mActionMessage = "The Reaper attacked you";
 	mDeathMessage = "You killed the Reaper";
-	mHealValue = 12 + 4 * difficulty;
+	mHealValue = 12;
 }
 
 void Reaper::TakeDamage(int damage)
@@ -37,6 +37,7 @@ void Reaper::TakeDamage(int damage)
 void Reaper::Reward(Player* player)
 {
 	player->mMaxHealth += 5;
+	player->mHealth = mMaxHealth;
 }
 
 void Reaper::Move()

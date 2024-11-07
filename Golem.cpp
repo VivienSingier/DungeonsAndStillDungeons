@@ -2,14 +2,14 @@
 #include "Player.h"
 #include <cstdlib>
 
-Golem::Golem(int x, int y, int difficulty, int index) : Monster(x, y, " G ", 3, 35, index, 6, "GOLEM")
+Golem::Golem(int x, int y, int difficulty, int index) : Monster(x, y, " G ", 2, 30, index, 6, "GOLEM")
 {
 	mAttack += 1 * difficulty;
-	mMaxHealth += 7 * difficulty;
-	mHealth += 7 * difficulty;
+	mMaxHealth += 4 * difficulty;
+	mHealth += 4 * difficulty;
 	mActionMessage = "The Golem attacked you";
 	mDeathMessage = "You killed the Golem";
-	mResistChance = 30 + 3 * difficulty;
+	mResistChance = 30;
 	mIsResisting = false;
 }
 

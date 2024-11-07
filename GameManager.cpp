@@ -10,15 +10,28 @@
 #include "Door.h"
 #include "AsciiArt.h"
 
-enum RoomType 
-{
-	Room1,
-	Room2,
-
-	Count
-};
-
 GameManager* GameManager::mInstance = nullptr;
+
+char getPlayerInputLettre(const char* str, const char c1, const char c2)
+{
+	char input = ' ';
+	bool isCorrectChar = ((int)input != (int)(c1) && (int)input != (int)(c1)+32 && (int)input != (int)(c2) && (int)input != (int)(c2)+32);
+	std::cout << str;
+	std::cin >> input;
+
+	while (!isCorrectChar || std::cin.peek() != '\n')
+		// Si l'entrée contient plus d'un char ou il n'est parmis les choix indiqués
+	{
+		std::cin.clear();
+		std::cin.ignore(10000, '\n');
+
+		std::cout << "INVALID INPUT, please try again" << std::endl;
+		std::cout << str;
+		std::cin >> input;
+	}
+
+	return input;
+}
 
 GameManager* GameManager::GetInstance()
 {
@@ -302,7 +315,6 @@ void GameManager::Display()
 	mPlayer->DisplayStats();
 	DisplayLastActions();
 	DisplayInput();
-	std::cout << mTotalMonsterCount << "|" << mHasWon << "|" << Room::mCounter;
 } 
 
 void GameManager::GameLoop()
@@ -326,16 +338,17 @@ void GameManager::GameLoop()
 	{
 		DisplayAsciiArt(gameOverTxt, 73, 8);
 		mTotalMonsterCount = 0;
-		std::cout << std::endl << "                   " << "Enter a key to play again";
-		_getch();
-		GameLoop();
 	}
 	if (mHasWon)
 	{
 		DisplayAsciiArt(youWonTxt, 57, 8);
-		std::cout << std::endl << "                   " << "Enter a key to play again";
-		_getch();
+	}
+
+	char input = getPlayerInputLettre("Would you like to play again ? (Y : YES, N ; NO) : ", 'y', 'n');
+	if (input == 'y' || input == 'Y')
+	{
 		GameLoop();
 	}
+
 }
 

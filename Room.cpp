@@ -284,94 +284,115 @@ void Room::PlaceDoors()
 
 void Room::PlaceEnnemies()
 {
-	//int availableCoordCount = 11 * 11 - 5;
-	//int** availableCoordArray = CreateAvailableCoordArray();
+	int availableCoordCount = 11 * 11 - 5;
+	int** availableCoordArray = CreateAvailableCoordArray();
 
-	//for (int k = 0; k < mNumGolem; k++)
+	for (int k = 0; k < mNumGolem; k++)
+	{
+		int index = rand() % availableCoordCount;
+		int i = availableCoordArray[index][0];
+		int j = availableCoordArray[index][1];
+		RemoveFromArray(&availableCoordArray, index, &availableCoordCount);
+
+		Monster* newMonster = new Golem(j, i, mDifficulty, mMonsterCounter);
+		mRoomArray[i][j] = newMonster;
+		AddIntoMonsterArray(newMonster);
+		GameManager::GetInstance()->mTotalMonsterCount++;
+	}
+
+	for (int k = 0; k < mNumSpecter; k++)
+	{
+		int index = rand() % availableCoordCount;
+		int i = availableCoordArray[index][0];
+		int j = availableCoordArray[index][1];
+		RemoveFromArray(&availableCoordArray, index, &availableCoordCount);
+
+		Monster* newMonster = new Specter(j, i, mDifficulty, mMonsterCounter);
+		mRoomArray[i][j] = newMonster;
+		AddIntoMonsterArray(newMonster);
+		GameManager::GetInstance()->mTotalMonsterCount++;
+	}
+
+	for (int k = 0; k < mNumReaper; k++)
+	{
+		int index = rand() % availableCoordCount;
+		int i = availableCoordArray[index][0];
+		int j = availableCoordArray[index][1];
+		RemoveFromArray(&availableCoordArray, index, &availableCoordCount);
+
+		Monster* newMonster = new Reaper(j, i, mDifficulty, mMonsterCounter);
+		mRoomArray[i][j] = newMonster;
+		AddIntoMonsterArray(newMonster);
+		GameManager::GetInstance()->mTotalMonsterCount++;
+	}
+	
+	// TENTATIVE GENERATION PROCEDURALE CONTROLLE
+	//RoomGen::Init();
+	//int layout;
+	//int numMonster;
+	//int numReaper = 0;
+	//int typeMonster;
+	//Monster* newMonster = nullptr;
+	//int** Coords;
+
+	//switch (mDifficulty)
 	//{
-	//	int index = rand() % availableCoordCount;
-	//	int i = availableCoordArray[index][0];
-	//	int j = availableCoordArray[index][1];
-	//	RemoveFromArray(&availableCoordArray, index, &availableCoordCount);
+	//default:
+	//	layout = RoomGen::Room8Spots;
+	//	Coords = RoomGen::Room8AvailableCoords;
+	//	numMonster = rand() % 8 + 5;
+	//	break;
+	//case 0:
+	//case 1:
+	//	numMonster = rand() % 4 + 1;
+	//	layout = RoomGen::Room4Spots;
+	//	Coords = RoomGen::Room4AvailableCoords;
+	//	break;
+	//case 2:
+	//case 3:
+	//	numMonster = rand() % 5 + 2;
+	//	layout = RoomGen::Room5Spots;
+	//	Coords = RoomGen::Room5AvailableCoords;
+	//	break;
+	//case 4:
+	//case 5:
+	//	numMonster = rand() % 6 + 3;
+	//	layout = RoomGen::Room6Spots;
+	//	Coords = RoomGen::Room6AvailableCoords;
+	//	break;
+	//case 6:
+	//case 7:
+	//	numMonster = rand() % 7 + 4;
+	//	layout = RoomGen::Room7Spots;
+	//	Coords = RoomGen::Room7AvailableCoords;
+	//	break;
+	//}
 
-	//	Monster* newMonster = new Golem(j, i, mDifficulty, mMonsterCounter);
-	//	mRoomArray[i][j] = newMonster;
+	//numMonster = layout + 4;
+
+
+	//for (int i = 0; i < 4 + layout; i++)
+	//{
+	//	int x = Coords[i][0];
+	//	int y = Coords[i][1];
+	//	int typeMonster = rand() % 3;
+	//	switch (typeMonster)
+	//	{
+	//	case 0:
+	//		newMonster = new Golem(x, y, mDifficulty, mMonsterCounter);
+	//		break;
+	//	case 1:
+	//		newMonster = new Specter(x, y, mDifficulty, mMonsterCounter);
+	//		break;
+	//	case 2:
+	//		newMonster = new Reaper(x, y, mDifficulty, mMonsterCounter);
+	//		numReaper++;
+	//		break;
+	//	}
+	//	mRoomArray[y][x] = newMonster;
 	//	AddIntoMonsterArray(newMonster);
 	//	GameManager::GetInstance()->mTotalMonsterCount++;
 	//}
-
-	//for (int k = 0; k < mNumSpecter; k++)
-	//{
-	//	int index = rand() % availableCoordCount;
-	//	int i = availableCoordArray[index][0];
-	//	int j = availableCoordArray[index][1];
-	//	RemoveFromArray(&availableCoordArray, index, &availableCoordCount);
-
-	//	Monster* newMonster = new Specter(j, i, mDifficulty, mMonsterCounter);
-	//	mRoomArray[i][j] = newMonster;
-	//	AddIntoMonsterArray(newMonster);
-	//	GameManager::GetInstance()->mTotalMonsterCount++;
-	//}
-
-	//for (int k = 0; k < mNumReaper; k++)
-	//{
-	//	int index = rand() % availableCoordCount;
-	//	int i = availableCoordArray[index][0];
-	//	int j = availableCoordArray[index][1];
-	//	RemoveFromArray(&availableCoordArray, index, &availableCoordCount);
-
-	//	Monster* newMonster = new Reaper(j, i, mDifficulty, mMonsterCounter);
-	//	mRoomArray[i][j] = newMonster;
-	//	AddIntoMonsterArray(newMonster);
-	//	GameManager::GetInstance()->mTotalMonsterCount++;
-	//}
-	int layout;
-	int numMonster;
-
-	switch (mDifficulty)
-	{
-	default:
-		layout = Room8Spots;
-		break;
-	case 0:
-	case 1:
-	case 2:
-		layout = Room4Spots;
-		break;
-	case 3:
-	case 4:
-	case 5:
-		layout = Room6Spots;
-		break;
-	case 6:
-	case 7:
-		layout = Room7Spots;
-		break;
-	}
-
-	if (layout == 0)
-	{
-		numMonster = rand() % 4 + 1;
-	}
-	else if (layout > 0 && layout < 2)
-	{
-		numMonster = rand() % 6 + 2;
-	}
-	else
-	{
-		numMonster = rand() % 8 + 3;
-	}
-
-	if (numMonster > layout + 4)
-	{
-		numMonster = layout + 4;
-	}
-
-	for (int i = 0; i < 3 + layout; i++)
-	{
-		
-	}
-
 }
 
 void DisplayLine()

@@ -5,7 +5,6 @@ class Player;
 
 class Monster : public Character
 {
-	static int mCounter;
 
 public:
 	const char* mActionMessage;
